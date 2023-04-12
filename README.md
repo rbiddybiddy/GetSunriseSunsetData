@@ -20,7 +20,7 @@ Instead, I went and found this free API that returns sunset & sunrise data for a
 3) Dump the data into Excel where my skill level is such that I stand a decent chance of producing graphs that make sense.
 
 So, do sunset and sunrise times follow a sine-like pattern? Spoiler alert: Yep. At least at my location in Oregon near
-the 45N parallel. Although the curve seems skewed a bit for what I'm sure are _reasons_.
+the 45ºN parallel. Although the curve seems skewed a bit for what I'm sure are _reasons_.
 
 For writing Excel files, I used the NuGet package [ClosedXML](https://github.com/ClosedXML/ClosedXML), which is based on,
 a wrapper for, slightly more straightforward than, and kind of a joke about, the

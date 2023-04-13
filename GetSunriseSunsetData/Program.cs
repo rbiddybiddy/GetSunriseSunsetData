@@ -1,6 +1,6 @@
 ﻿using ClosedXML.Excel;
 using System;
-using System.Collections.Generic;
+using System.Data;
 using System.IO;
 using System.Net.Http;
 using System.Text.Json;
@@ -24,7 +24,12 @@ namespace GetSunriseSunsetData
 			DateTime sunset;
 			Uri uri;
 			string responseJSON;
-			var dataPoints = new List<DataPoint>();
+
+			//var dataPoints = new List<DataPoint>();
+			var daysTable = new System.Data.DataTable("Days");
+			daysTable.Columns.Add(new DataColumn("date", typeof(DateTime))); //TODO - this didn't work out ideally format-wise, tempted to use string, see 2023-04-12-191447_SunriseSunsetData.xlsx
+			daysTable.Columns.Add(new DataColumn("sunrise", typeof(DateTime)));
+			daysTable.Columns.Add(new DataColumn("sunset", typeof(DateTime)));
 
 			for (int i = 0; i < _days; i++)
 			{
@@ -58,14 +63,8 @@ namespace GetSunriseSunsetData
 					sunset = DateTime.Parse(results.GetProperty("sunset").ToString()).ToLocalTime();
 				}
 
-				//create new DataPoint & add to list
-				dataPoints.Add(new DataPoint()
-				{
-					Date = date,
-					Sunrise = sunrise,
-					Sunset = sunset
-				});
-				Console.WriteLine($"{dataPoints.Count} data points retrieved");
+				daysTable.Rows.Add(new Object[] { date, sunrise, sunset });
+				Console.WriteLine($"{daysTable.Rows.Count} data points retrieved");
 			}
 
 			//write output to Excel
@@ -81,21 +80,22 @@ namespace GetSunriseSunsetData
 			sht.Range("1:1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
 			sht.SheetView.FreezeRows(1);
 
-			//write data rows
-			int row = 1;
-			foreach (var dataPoint in dataPoints)
+			//write data rows to Excel
+			int rowIndex = 1;
+			foreach (DataRow row in daysTable.Rows)
 			{
-				row++;
-				sht.Cell(row, 1).Value = dataPoint.Date;
-				sht.Cell(row, 2).Value = dataPoint.Sunrise;
-				sht.Cell(row, 3).Value = dataPoint.Sunset;
-				Console.WriteLine($"Dumped {row - 1} rows to Excel");
+				rowIndex++;
+				sht.Cell(rowIndex, 1).Value = row["date"].ToString(); //TODO - wish I didn't need to call .ToString() here
+				sht.Cell(rowIndex, 2).Value = row["sunrise"].ToString();
+				sht.Cell(rowIndex, 3).Value = row["sunset"].ToString();
+				Console.WriteLine($"Dumped {rowIndex - 1} rows to Excel");
 			}
 
 			//set date/time formats
-			sht.Range(2, 1, row, 1).Style.NumberFormat.NumberFormatId = 30; //m/d/yy or m-d-yy
-			sht.Range(2, 2, row, 2).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
-			sht.Range(2, 3, row, 3).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
+			//TODO - these were basically ignored, see 2023-04-12-191447_SunriseSunsetData.xlsx
+			sht.Range(2, 1, rowIndex, 1).Style.NumberFormat.NumberFormatId = 30; //m/d/yy or m-d-yy
+			sht.Range(2, 2, rowIndex, 2).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
+			sht.Range(2, 3, rowIndex, 3).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
 
 			//save Excel file
 			string outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);

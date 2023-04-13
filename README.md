@@ -12,7 +12,7 @@ to look up and confirm or refute. But what fun would that be, huh?
 
 Instead, I went and found this free API that returns sunset & sunrise data for any date and location:\
 [https://sunrise-sunset.org/api](https://sunrise-sunset.org/api)\
-(It's a free service, so if you decide to use it, keep it to a reasonable volume.)
+(It's a free service, so if you decide to use it, they request that you keep your request volume reasonable.)
 
 ...and wrote this simple .NET console app GetSunriseSunsetData, which will:
 1) Iterate through an entire year (or other interval), day by day
@@ -20,13 +20,13 @@ Instead, I went and found this free API that returns sunset & sunrise data for a
 3) Dump the data into Excel where my skill level is such that I stand a decent chance of producing graphs that make sense.
 
 So, do sunset and sunrise times follow a sine-like pattern? Spoiler alert: Yep. At least at my location in Oregon near
-the 45ºN parallel. Although the curve seems skewed a bit for what I'm sure are _reasons_.
+the 45ºN parallel. Although the curve seems skewed a bit, for what I'm sure are _reasons_.
 
 For writing Excel files, I used the NuGet package [ClosedXML](https://github.com/ClosedXML/ClosedXML), which is based on,
 a wrapper for, slightly more straightforward than, and kind of a joke about, the
 [Open XML](https://en.wikipedia.org/wiki/Office_Open_XML) spec that describes Excel files.
 
-Configuration (e.g. the longitude and latitude for your location, what date to start on and how many days of data to
+Configuration (the longitude and latitude for your location, what date to start on and how many days of data to
 get) is done via private field initializations in the Program class. Of course these should be in a config file
 or the like. Also I kind of deserialize the JSON the hard way. Look, this is a very simple and stupid app,
 all right? There are better, easier and/or more sophisticated ways to do several of the things. Feel free to submit

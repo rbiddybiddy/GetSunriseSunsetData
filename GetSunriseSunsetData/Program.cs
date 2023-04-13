@@ -69,33 +69,9 @@ namespace GetSunriseSunsetData
 
 			//write output to Excel
 			var wbk = new XLWorkbook();
-			var sht = wbk.AddWorksheet("data");
-			sht.Style.Alignment.Vertical = XLAlignmentVerticalValues.Center;
-
-			//populate & format header row
-			sht.Cell(1, 1).Value = "date";
-			sht.Cell(1, 2).Value = "sunrise";
-			sht.Cell(1, 3).Value = "sunset";
-			sht.Range("1:1").Style.Font.Bold = true;
-			sht.Range("1:1").Style.Alignment.Horizontal = XLAlignmentHorizontalValues.Center;
-			sht.SheetView.FreezeRows(1);
-
-			//write data rows to Excel
-			int rowIndex = 1;
-			foreach (DataRow row in daysTable.Rows)
-			{
-				rowIndex++;
-				sht.Cell(rowIndex, 1).Value = row["date"].ToString(); //TODO - wish I didn't need to call .ToString() here
-				sht.Cell(rowIndex, 2).Value = row["sunrise"].ToString();
-				sht.Cell(rowIndex, 3).Value = row["sunset"].ToString();
-				Console.WriteLine($"Dumped {rowIndex - 1} rows to Excel");
-			}
-
-			//set date/time formats
-			//TODO - these were basically ignored, see 2023-04-12-191447_SunriseSunsetData.xlsx
-			sht.Range(2, 1, rowIndex, 1).Style.NumberFormat.NumberFormatId = 30; //m/d/yy or m-d-yy
-			sht.Range(2, 2, rowIndex, 2).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
-			sht.Range(2, 3, rowIndex, 3).Style.NumberFormat.NumberFormatId = 18; //h:mm AM/PM
+			var sht = wbk.AddWorksheet(daysTable, "data");
+			//TODO - this worked great but still same formatting problem; and setting Range.Style.NumberFormat.NumberFormatId to (30 for m/d/yy) or (18 for /h:mm AM/PM) corrupted the file
+			//See 2023-04-12-194349_SunriseSunsetData.xlsx
 
 			//save Excel file
 			string outputFolder = Environment.GetFolderPath(Environment.SpecialFolder.Desktop);

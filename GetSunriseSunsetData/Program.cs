@@ -20,10 +20,9 @@ namespace GetSunriseSunsetData
 		static async Task Main()
 		{
 			DateOnly date;
-			TimeOnly sunrise;
-			TimeOnly sunset;
 			Uri uri;
 			string responseJSON;
+			DataRow row;
 
 			var daysTable = new DataTable("Days");
 			daysTable.Columns.Add(new DataColumn("date", typeof(DateOnly)));
@@ -53,17 +52,18 @@ namespace GetSunriseSunsetData
 					continue;
 				}
 
-				//parse response JSON
+				//parse response JSON and add row to table
 				using (JsonDocument doc = JsonDocument.Parse(responseJSON))
 				{
 					JsonElement root = doc.RootElement;
 					JsonElement results = root.GetProperty("results");
-					sunrise = TimeOnly.FromDateTime(DateTime.Parse(results.GetProperty("sunrise").ToString()).ToLocalTime());
-					sunset = TimeOnly.FromDateTime(DateTime.Parse(results.GetProperty("sunset").ToString()).ToLocalTime());
+					row = daysTable.NewRow();
+					row["date"] = date;
+					row["sunrise"] = TimeOnly.FromDateTime(DateTime.Parse(results.GetProperty("sunrise").ToString()).ToLocalTime());
+					row["sunset"] = TimeOnly.FromDateTime(DateTime.Parse(results.GetProperty("sunset").ToString()).ToLocalTime());
+					daysTable.Rows.Add(row);
+					Console.WriteLine($"{daysTable.Rows.Count} data points retrieved" + Environment.NewLine);
 				}
-
-				daysTable.Rows.Add(new Object[] { date, sunrise, sunset });
-				Console.WriteLine($"{daysTable.Rows.Count} data points retrieved" + Environment.NewLine);
 			}
 
 			//write output to Excel
